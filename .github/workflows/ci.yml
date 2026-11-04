@@ -1,3 +1,4 @@
+
 name: CI Business Logic
 
 on:
@@ -8,26 +9,36 @@ jobs:
   test:
     name: Lint, tests, coverage and build
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Proyecto_Python_Base_U5
+
     steps:
       - name: Obtener el código
         uses: actions/checkout@v4
+
       - name: Preparar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
+
       - name: Instalar dependencias
         run: python -m pip install -r requirements.txt
+
       - name: Analizar estilo con Ruff
         run: python -m ruff check src tests
+
       - name: Ejecutar pruebas y exigir cobertura mínima de 80%
         run: python -m pytest -v --cov=src --cov-report=term-missing --cov-report=html --cov-fail-under=80
+
       - name: Comprobar compilación de fuentes
         run: python -m compileall -q src
+
       - name: Adjuntar reporte HTML de cobertura
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reporte-cobertura-html
-          path: htmlcov/
+          path: Proyecto_Python_Base_U5/htmlcov/
           if-no-files-found: ignore
